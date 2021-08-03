@@ -37,6 +37,7 @@
 #include "btif_config.h"
 #include "device/include/device_iot_config.h"
 #include "btif_profile_queue.h"
+#include "btm_int.h"
 
 static thread_t* management_thread;
 
@@ -228,6 +229,11 @@ static void event_clean_up_stack(void* context) {
 
   btif_vendor_cleanup_iot_broadcast_timer();
   btif_cleanup_bluetooth();
+
+  // btm resource should be freed after stopping JNI workqueue thread.
+  LOG_INFO(LOG_TAG, "%s freeing the btm resource", __func__);
+  btm_free();
+
   module_clean_up(get_module(BTIF_CONFIG_MODULE));
 #if (BT_IOT_LOGGING_ENABLED == TRUE)
   module_clean_up(get_module(DEVICE_IOT_CONFIG_MODULE));
