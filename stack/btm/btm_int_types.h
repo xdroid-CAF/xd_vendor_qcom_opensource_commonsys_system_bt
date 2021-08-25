@@ -626,6 +626,7 @@ typedef struct {
 #define BTM_MAX_BL_SW_ROLE_ATTEMPTS 1
   uint8_t switch_role_attempts;
 #endif
+  bool is_le_disc_pending = false;
 } tBTM_SEC_DEV_REC;
 
 #define BTM_SEC_IS_SM4(sm) ((bool)(BTM_SM4_TRUE == ((sm)&BTM_SM4_TRUE)))
