@@ -105,6 +105,7 @@ typedef struct controller_t {
   bool (*is_multicast_enabled)();
   bool (*supports_twsp_remote_state)();
   bool (*get_max_power_values)(uint8_t *);
+  bool (*is_qbce_QCM_HCI_supported)(void);
 } controller_t;
 
 const controller_t* controller_get_interface();
