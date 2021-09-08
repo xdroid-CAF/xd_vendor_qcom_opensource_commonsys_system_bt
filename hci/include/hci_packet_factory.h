@@ -49,6 +49,7 @@ typedef struct {
   BT_HDR* (*make_read_scrambling_supported_freqs)(void);
   BT_HDR* (*make_read_add_on_features_supported)(void);
   BT_HDR* (*make_read_local_simple_pairing_options)(void);
+  BT_HDR* (*make_qbce_set_qlm_event_mask)(const bt_event_mask_t* event_mask);
 } hci_packet_factory_t;
 
 const hci_packet_factory_t* hci_packet_factory_get_interface();
