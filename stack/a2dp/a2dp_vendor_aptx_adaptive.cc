@@ -56,7 +56,6 @@
 #include "osi/include/osi.h"
 #include "hardware/bt_av.h"
 
-
 /* aptX-adaptive Source codec capabilities */
 static const tA2DP_APTX_ADAPTIVE_CIE a2dp_aptx_adaptive_src_caps = {
     A2DP_APTX_ADAPTIVE_VENDOR_ID,          /* vendorId */
@@ -1322,7 +1321,10 @@ bool A2dpCodecConfigAptxAdaptive::setCodecConfig(const uint8_t* p_peer_codec_inf
     result_config_cie.aptx_data = a2dp_aptx_adaptive_r1_offload_caps.aptx_data;
     LOG_INFO(LOG_TAG, "%s: Using Aptx Adaptive R1 config", __func__);
   } else {
-    result_config_cie.aptx_data = sink_info_cie.aptx_data;
+    if (A2DP_Get_Aptx_AdaptiveR2_1_Supported())
+      result_config_cie.aptx_data = a2dp_aptx_adaptive_r2_1_offload_caps.aptx_data;
+    else
+      result_config_cie.aptx_data = a2dp_aptx_adaptive_offload_caps.aptx_data;
   }
 
   memset(result_config_cie.reserved_data, 0, sizeof(result_config_cie.reserved_data));
