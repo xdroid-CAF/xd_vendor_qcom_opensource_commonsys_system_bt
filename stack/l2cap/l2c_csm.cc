@@ -365,6 +365,14 @@ static void l2c_csm_orig_w4_sec_comp(tL2C_CCB* p_ccb, uint16_t event,
       break;
 
     case L2CEVT_SEC_RE_SEND_CMD: /* BTM has enough info to proceed */
+      if ((p_ccb->p_lcb->transport == BT_TRANSPORT_BR_EDR) &&
+          (p_ccb->p_lcb->handle == HCI_INVALID_HANDLE) &&
+          (p_ccb->p_lcb->link_state = LST_CONNECTING)) {
+        L2CAP_TRACE_WARNING("%s reconnecting link,wait for linkup %d ", __func__,
+        p_ccb->local_cid);
+        break;
+      }
+      FALLTHROUGH;
     case L2CEVT_LP_CONNECT_CFM:  /* Link came up         */
 
       if (p_ccb->p_rcb == NULL) {
