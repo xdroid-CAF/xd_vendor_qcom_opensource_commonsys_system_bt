@@ -1001,7 +1001,6 @@ bool A2dpCodecConfigAptxAdaptive::setCodecConfig(const uint8_t* p_peer_codec_inf
   tA2DP_APTX_ADAPTIVE_CIE result_config_cie;
   uint8_t sampleRate;
   uint8_t channelMode;
-  std::string a2dp_ofload_cap;
 
   // Save the internal state
   btav_a2dp_codec_config_t saved_codec_config = codec_config_;
@@ -1316,15 +1315,27 @@ bool A2dpCodecConfigAptxAdaptive::setCodecConfig(const uint8_t* p_peer_codec_inf
 
   result_config_cie.sourceType = a2dp_aptx_adaptive_caps.sourceType;
 
-  a2dp_ofload_cap = getOffloadCaps();
-  if(getOffloadCaps().find("aptxadaptiver2") == std::string::npos) {
+  if (getOffloadCaps().find("aptxadaptiver2") == std::string::npos) {
     result_config_cie.aptx_data = a2dp_aptx_adaptive_r1_offload_caps.aptx_data;
     LOG_INFO(LOG_TAG, "%s: Using Aptx Adaptive R1 config", __func__);
   } else {
-    if (A2DP_Get_Aptx_AdaptiveR2_1_Supported())
-      result_config_cie.aptx_data = a2dp_aptx_adaptive_r2_1_offload_caps.aptx_data;
-    else
-      result_config_cie.aptx_data = a2dp_aptx_adaptive_offload_caps.aptx_data;
+    if (A2DP_Get_Aptx_AdaptiveR2_1_Supported()) {
+      if (sink_info_cie.aptx_data.cap_ext_ver_num == 0) {
+        LOG_INFO(LOG_TAG, "%s: remote is R1.0 capable", __func__);
+        result_config_cie.aptx_data = sink_info_cie.aptx_data;
+      } else {
+        LOG_INFO(LOG_TAG, "%s: Select Aptx Adaptive R2.1 config", __func__);
+        result_config_cie.aptx_data = a2dp_aptx_adaptive_r2_1_offload_caps.aptx_data;
+      }
+    } else {
+      if (sink_info_cie.aptx_data.cap_ext_ver_num == 0) {
+        LOG_INFO(LOG_TAG, "%s: remote is R1.0 capable", __func__);
+        result_config_cie.aptx_data = sink_info_cie.aptx_data;
+      } else {
+        LOG_INFO(LOG_TAG, "%s: Select Aptx Adaptive R2 config", __func__);
+        result_config_cie.aptx_data = a2dp_aptx_adaptive_offload_caps.aptx_data;
+      }
+    }
   }
 
   memset(result_config_cie.reserved_data, 0, sizeof(result_config_cie.reserved_data));
